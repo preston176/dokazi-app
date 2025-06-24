@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import CreateDocHeader from "./_components/CreateDocHeader";
 import DocDetails from "./_components/DocDetails";
@@ -39,10 +41,10 @@ export default function CreateDocument() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <CreateDocHeader onBack={handleBack} />
+        <div className="min-h-screen bg-gray-50  ">
+            <CreateDocHeader onBack={handleBack}  />
 
-            <div className="max-w-4xl mx-auto p-4 lg:p-6 space-y-6">
+            <div className="p-4 lg:p-6 space-y-6 max-w-5xl mx-auto">
                 <DocDetails />
                 <ClientInfo />
                 <ServiceScopeSection />
