@@ -1,22 +1,35 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import CreateDocHeader from "./_components/CreateDocHeader";
-import DocDetails from "./_components/DocDetails";
-import ClientInfo from "./_components/ClientInfo";
-import ServiceScopeSection from "./_components/ServiceScopeSection";
-import PricingSection from "./_components/PricingSection";
-import TimelineSection from "./_components/TimelineSection";
-import CustomContentSection from "./_components/CustomContentSection";
+import CreateDocHeader from "./_components/CreateDocHeader"
+import DocDetails from "./_components/DocDetails"
+import ClientInfo from "./_components/ClientInfo"
+import ServiceScopeSection from "./_components/ServiceScopeSection"
+import PricingSection from "./_components/PricingSection"
+import TimelineSection from "./_components/TimelineSection"
+import CustomContentSection from "./_components/CustomContentSection"
 
 // Form Actions
-function FormActions({ onCancel, onPreview }: { onCancel?: () => void; onPreview?: () => void }) {
+function FormActions({
+    onCancel,
+    onPreview,
+}: {
+    onCancel?: () => void
+    onPreview?: () => void
+}) {
     return (
-        <div className="flex flex-col sm:flex-row gap-3 sm:justify-end p-4 lg:p-6 border-t bg-gray-50">
-            <Button variant="outline" onClick={onCancel} className="w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row gap-3 sm:justify-end p-4 lg:p-6 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 ">
+            <Button
+                variant="outline"
+                onClick={onCancel}
+                className="w-full sm:w-auto dark:border-gray-700 dark:text-white"
+            >
                 Cancel
             </Button>
-            <Button onClick={onPreview} className="w-full sm:w-auto bg-gray-900 hover:bg-gray-800">
+            <Button
+                onClick={onPreview}
+                className="w-full sm:w-auto bg-gray-900 hover:bg-gray-800 text-white dark:bg-white dark:hover:bg-gray-200 dark:text-black"
+            >
                 Preview Document
             </Button>
         </div>
@@ -26,23 +39,22 @@ function FormActions({ onCancel, onPreview }: { onCancel?: () => void; onPreview
 // Main Create Document Component
 export default function CreateDocument() {
     const handleBack = () => {
-        // Handle navigation back to dashboard
         console.log("Navigate back to dashboard")
     }
 
     const handleCancel = () => {
-        // Handle form cancellation
         console.log("Cancel form")
     }
 
     const handlePreview = () => {
-        // Handle document preview
         console.log("Preview document")
     }
 
     return (
-        <div className="min-h-screen bg-gray-50  ">
-            <CreateDocHeader onBack={handleBack}  />
+        <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white">
+            <div className="max-w-7xl mx-auto">
+                <CreateDocHeader onBack={handleBack} />
+            </div>
 
             <div className="p-4 lg:p-6 space-y-6 max-w-5xl mx-auto">
                 <DocDetails />

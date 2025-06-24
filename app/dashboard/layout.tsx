@@ -1,10 +1,16 @@
-import React from 'react'
+"use client"
+import React, { useState } from 'react'
+import Header from './_components/Header'
+
+
 
 function layout({ children }: { children: React.ReactNode }) {
+    const [, setIsMobileSidebarOpen] = useState(false)
     return (
         <div>
-            {children}
+            <Header onMenuClick={() => setIsMobileSidebarOpen(true)} />
 
+            {children}
         </div>
     )
 }
