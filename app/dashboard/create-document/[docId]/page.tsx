@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
 import CreateDocHeader from "./_components/CreateDocHeader";
 import DocDetails from "./_components/DocDetails";
@@ -7,10 +10,7 @@ import ClientInfo from "./_components/ClientInfo";
 import ServiceScopeSection from "./_components/ServiceScopeSection";
 import PricingSection from "./_components/PricingSection";
 import TimelineSection from "./_components/TimelineSection";
-import CustomContentSection from "./_components/CustomContentSection";
 import useStore from "@/store/DocumentStore";
-
-
 
 // Form Actions
 function FormActions({
@@ -39,10 +39,20 @@ function FormActions({
     );
 }
 
-// Main Create Document Component
+// Main Page Component
 export default function CreateDocument() {
-    const document = useStore((state) => state.document); //  Get Zustand state
+    const router = useRouter();
+    const params = useParams();
+    const docId = params.docId as string;
 
+    const document = useStore((state) => state.document);
+    const loadDocument = useStore((state) => state.loadDocument);
+
+    useEffect(() => {
+        if (docId) {
+            loadDocument(docId); // sets both document + docId
+        }
+    }, [docId, loadDocument]);
 
     const handleBack = () => {
         window.location.href = "/dashboard";
@@ -53,10 +63,13 @@ export default function CreateDocument() {
     };
 
     const handlePreview = () => {
-        console.log("Preview document:");
-        console.log(JSON.stringify(document, null, 2));
-    };
+        if (!docId) {
+            console.warn("No docId available");
+            return;
+        }
 
+        router.push(`/dashboard/create-document/${docId}/preview`);
+    };
     return (
         <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white">
             <div className="max-w-7xl mx-auto">
@@ -69,7 +82,7 @@ export default function CreateDocument() {
                 <ServiceScopeSection />
                 <PricingSection />
                 <TimelineSection />
-                <CustomContentSection />
+                {/* <CustomContentSection /> */}
             </div>
 
             <FormActions onCancel={handleCancel} onPreview={handlePreview} />
