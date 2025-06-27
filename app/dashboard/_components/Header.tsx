@@ -1,6 +1,6 @@
 import { ModeToggle } from "@/components/dark-mode-toggle"
 import { Button } from "@/components/ui/button"
-import { useUser } from "@clerk/nextjs"
+import { SignOutButton, UserButton, useUser } from "@clerk/nextjs"
 import { FileText, LogOut, Menu } from "lucide-react"
 
 function Header({ onMenuClick }: { onMenuClick?: () => void }) {
@@ -19,9 +19,12 @@ function Header({ onMenuClick }: { onMenuClick?: () => void }) {
 
       <div className="flex items-center gap-2 lg:gap-4">
         <ModeToggle />
+        <UserButton />
         <span className="text-xs lg:text-sm text-gray-600 dark:text-gray-400 hidden sm:block">
           Welcome {user?.firstName || user?.lastName || user?.emailAddresses[0].emailAddress}
         </span>
+        
+        <SignOutButton>
         <Button
           variant="ghost"
           size="sm"
@@ -30,6 +33,7 @@ function Header({ onMenuClick }: { onMenuClick?: () => void }) {
           <LogOut className="w-3 h-3 lg:w-4 lg:h-4" />
           <span className="hidden sm:inline">Logout</span>
         </Button>
+        </SignOutButton>
       </div>
     </header>
   )
