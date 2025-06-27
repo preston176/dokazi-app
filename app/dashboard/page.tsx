@@ -9,11 +9,11 @@ export default function ProposalCraftDashboard() {
 
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black ">
+    <div className="min-h-screen bg-white dark:bg-black container mx-auto">
 
       <div className="flex">
         {/* Desktop Sidebar - Hidden on mobile */}
-        <div className="hidden lg:block border-r dark:border-gray-800 min-h-screen">
+        <div className="hidden lg:block border-r border-b dark:border-gray-800 min-h-full">
           <CreditsSidebar />
         </div>
 

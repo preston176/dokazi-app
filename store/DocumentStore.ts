@@ -1,4 +1,6 @@
+// src/store/DocumentStore.ts
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 type Document = {
   DocTitle: string;
@@ -32,15 +34,22 @@ const initialDocument: Document = {
   StartDate: "",
   EndDate: "",
   Duration: "",
-  CustomContent: "",
 };
 
-const useStore = create<StoreState>((set) => ({
-  document: initialDocument,
-  updateDocument: (newDocument: Partial<Document>) =>
-    set((state) => ({
-      document: { ...state.document, ...newDocument },
-    })),
-}));
+const useStore = create<StoreState>()(
+  persist(
+    (set) => ({
+      document: initialDocument,
+      updateDocument: (newDocument: Partial<Document>) =>
+        set((state) => ({
+          document: { ...state.document, ...newDocument },
+        })),
+    }),
+    {
+      name: "document-store", // key in localStorage
+      partialize: (state) => ({ document: state.document }), // only persist document
+    }
+  )
+);
 
 export default useStore;

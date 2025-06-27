@@ -7,8 +7,9 @@ import ClientInfo from "./_components/ClientInfo";
 import ServiceScopeSection from "./_components/ServiceScopeSection";
 import PricingSection from "./_components/PricingSection";
 import TimelineSection from "./_components/TimelineSection";
-import CustomContentSection from "./_components/CustomContentSection";
+// import CustomContentSection from "./_components/CustomContentSection";
 import useStore from "@/store/DocumentStore";
+import { useRouter } from "next/navigation";
 
 
 
@@ -20,6 +21,8 @@ function FormActions({
     onCancel?: () => void;
     onPreview?: () => void;
 }) {
+
+
     return (
         <div className="flex flex-col sm:flex-row gap-3 sm:justify-end p-4 lg:p-6 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
             <Button
@@ -43,6 +46,9 @@ function FormActions({
 export default function CreateDocument() {
     const document = useStore((state) => state.document); //  Get Zustand state
 
+    const router = useRouter();
+
+
 
     const handleBack = () => {
         window.location.href = "/dashboard";
@@ -55,6 +61,11 @@ export default function CreateDocument() {
     const handlePreview = () => {
         console.log("Preview document:");
         console.log(JSON.stringify(document, null, 2));
+
+
+        router.push("/dashboard/create-document/preview")
+
+
     };
 
     return (
@@ -69,7 +80,7 @@ export default function CreateDocument() {
                 <ServiceScopeSection />
                 <PricingSection />
                 <TimelineSection />
-                <CustomContentSection />
+                {/* <CustomContentSection /> */}
             </div>
 
             <FormActions onCancel={handleCancel} onPreview={handlePreview} />
