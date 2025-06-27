@@ -9,7 +9,7 @@ export default function ProposalCraftDashboard() {
 
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black ">
+    <div className="min-h-screen bg-white dark:bg-black container mx-auto ">
 
       <div className="flex">
         {/* Desktop Sidebar - Hidden on mobile */}
