@@ -1,8 +1,12 @@
 import { ModeToggle } from "@/components/dark-mode-toggle"
 import { Button } from "@/components/ui/button"
+import { useUser } from "@clerk/nextjs"
 import { FileText, LogOut, Menu } from "lucide-react"
 
 function Header({ onMenuClick }: { onMenuClick?: () => void }) {
+
+  const { user } = useUser()
+
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between p-4 lg:p-6 bg-white dark:bg-black border-b dark:border-gray-800">
       <div className="flex items-center gap-2">
@@ -16,7 +20,7 @@ function Header({ onMenuClick }: { onMenuClick?: () => void }) {
       <div className="flex items-center gap-2 lg:gap-4">
         <ModeToggle />
         <span className="text-xs lg:text-sm text-gray-600 dark:text-gray-400 hidden sm:block">
-          Welcome, rere
+          Welcome {user?.firstName || user?.lastName || user?.emailAddresses[0].emailAddress}
         </span>
         <Button
           variant="ghost"
