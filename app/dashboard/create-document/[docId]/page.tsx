@@ -11,6 +11,7 @@ import ServiceScopeSection from "./_components/ServiceScopeSection";
 import PricingSection from "./_components/PricingSection";
 import TimelineSection from "./_components/TimelineSection";
 import useStore from "@/store/DocumentStore";
+import { toast } from "sonner";
 
 // Form Actions
 function FormActions({
@@ -41,7 +42,7 @@ function FormActions({
 
 // Main Page Component
 export default function CreateDocument() {
-    const router = useRouter();
+    const router = useRouter()
     const params = useParams();
     const docId = params.docId as string;
 
@@ -67,6 +68,7 @@ export default function CreateDocument() {
             console.warn("No docId available");
             return;
         }
+        toast.success("Document ready for preview")
 
         router.push(`/dashboard/create-document/${docId}/preview`);
     };

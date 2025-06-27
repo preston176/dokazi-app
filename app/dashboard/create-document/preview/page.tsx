@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Save, RotateCcw, BrainCog, Download } from "lucide-react";
 import useStore from "@/store/DocumentStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import jsPDF from "jspdf";
+import { saveDocument } from "@/app/actions/saveDocument";
+import { v4 as uuidv4 } from "uuid";
+import { toast } from "sonner";
+
 
 // Header
 function PreviewHeader({
@@ -18,6 +22,63 @@ function PreviewHeader({
     onReset: () => void;
     onDownload: () => void;
 }) {
+
+
+    const handleSaveDocument = async () => {
+        toast.loading("Saving Document")
+
+        const router = useRouter();
+
+        const state = useStore.getState();
+
+        let docId = state.docId;
+
+        //  Generate UUID if not already present
+        if (!docId) {
+            docId = uuidv4();
+            useStore.getState().setDocId(docId);
+        }
+
+        const result = await saveDocument({
+            ...state.document,
+            docId,
+        });
+
+        if (result && result.success && result.data) {
+            const newDocId = result.data.docId;
+
+            // ✅ Clear state
+            useStore.setState({
+                document: {
+                    DocTitle: "",
+                    doctype: "",
+                    ClientName: "",
+                    ClientEmail: "",
+                    ServiceScope: [""],
+                    PricingAmount: 0,
+                    Currency: "",
+                    Type: "",
+                    StartDate: "",
+                    EndDate: "",
+                    Duration: "",
+                    CustomContent: "",
+                },
+                docId: null,
+            });
+
+            // Optional toast / redirect logic here
+            // console.log("Saved with ID:", newDocId);
+            toast.success("Document saved!");
+
+            // clear state
+            router.replace(`/document/view/${newDocId}`);
+
+        } else {
+            // console.warn("Save failed or user not logged in:", result);
+            toast.error("Error while saving document. " + result)
+        }
+    };
+
     return (
         <div className="fixed top-0 w-full md:sticky md:top-20 z-30 bg-white dark:bg-gray-900 border-b p-4 lg:p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-y-0">
             {/* Left section */}
@@ -46,7 +107,7 @@ function PreviewHeader({
                     <BrainCog className="w-4 h-4" />
                     Improve with AI
                 </Button>
-                <Button variant="default" className="gap-2 bg-emerald-700 hover:bg-gray-800 text-white">
+                <Button variant="default" className="gap-2 bg-emerald-700 hover:bg-gray-800 text-white" onClick={handleSaveDocument}>
                     <Save className="w-4 h-4" />
                     Save Document
                 </Button>
@@ -271,20 +332,21 @@ function DocumentContent({
     onReset: () => void;
     refForPdf: React.RefObject<HTMLDivElement>;
 }) {
-    const { CustomContent } = useStore((s) => s.document);
-    const updateDocument = useStore((s) => s.updateDocument);
+    const { document, updateDocument } = useStore((s) => ({
+        document: s.document,
+        updateDocument: s.updateDocument,
+    }));
 
     const defaultContent = generateDocumentContent(data);
-    const [content, setContent] = useState(CustomContent || defaultContent);
 
     useEffect(() => {
-        setContent(CustomContent || defaultContent);
-    }, [CustomContent, defaultContent]);
+        if (!document.CustomContent || document.CustomContent.trim() === "") {
+            updateDocument({ CustomContent: defaultContent });
+        }
+    }, [document.CustomContent, defaultContent, updateDocument]);
 
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const value = e.target.value;
-        setContent(value);
-        updateDocument({ CustomContent: value });
+        updateDocument({ CustomContent: e.target.value });
     };
 
     return (
@@ -298,7 +360,7 @@ function DocumentContent({
                     className="bg-white border shadow-sm rounded-lg p-4 md:p-6 max-w-full md:max-w-[794px] mx-auto font-sans text-gray-900"
                 >
                     <textarea
-                        value={content}
+                        value={document.CustomContent ?? ""}
                         onChange={handleChange}
                         className="w-full md:h-[1100px] min-h-[400px] resize-none bg-transparent outline-none text-sm sm:text-base leading-relaxed whitespace-pre-wrap text-wrap font-sans"
                         style={{ fontFamily: "inherit", lineHeight: "1.75" }}
@@ -308,6 +370,8 @@ function DocumentContent({
         </Card>
     );
 }
+
+
 
 // Main
 export default function DocumentPreview() {

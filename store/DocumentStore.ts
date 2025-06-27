@@ -1,4 +1,3 @@
-// store/DocumentStore.ts
 import { create } from "zustand";
 
 type Document = {
@@ -21,7 +20,7 @@ type StoreState = {
   docId: string | null;
   setDocId: (id: string) => void;
   loadDocument: (id: string) => void;
-  updateDocument: (newDocument: Partial<Document>) => void;
+  updateDocument: (partial: Partial<Document>) => void;
 };
 
 const initialDocument: Document = {
@@ -39,7 +38,9 @@ const initialDocument: Document = {
   CustomContent: "",
 };
 
-let debounceTimer: ReturnType<typeof setTimeout>;
+// Debounced background saving state
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+let queuedUpdate: Document | null = null;
 
 const useStore = create<StoreState>((set, get) => ({
   document: initialDocument,
@@ -50,35 +51,44 @@ const useStore = create<StoreState>((set, get) => ({
   loadDocument: (id) => {
     if (typeof window === "undefined") return;
 
-    const saved = localStorage.getItem(`doc-${id}`);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        set({ document: parsed, docId: id });
-      } catch (e) {
-        console.error("Failed to parse local storage:", e);
-        set({ document: initialDocument, docId: id });
+    try {
+      const saved = localStorage.getItem(`doc-${id}`);
+      if (saved) {
+        set({ document: JSON.parse(saved), docId: id });
+        return;
       }
-    } else {
-      set({ document: initialDocument, docId: id });
+    } catch (e) {
+      console.error("Failed to parse saved doc:", e);
     }
+
+    // fallback
+    set({ document: initialDocument, docId: id });
   },
 
-  updateDocument: (newDocument) => {
-    clearTimeout(debounceTimer);
+  updateDocument: (partial) => {
+    const { document, docId } = get();
+    if (!docId) return;
 
+    // ✅ Immediate UI update
+    const updatedDoc = { ...document, ...partial };
+    set({ document: updatedDoc });
+
+    // 🧠 Queue for background saving
+    queuedUpdate = updatedDoc;
+
+    if (debounceTimer) clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
-      const { document, docId } = get();
-      if (!docId) return;
-
-      const updated = { ...document, ...newDocument };
-      set({ document: updated });
-
-      if (typeof window !== "undefined") {
-        localStorage.setItem(`doc-${docId}`, JSON.stringify(updated));
+      if (typeof window !== "undefined" && queuedUpdate && docId) {
+        try {
+          localStorage.setItem(`doc-${docId}`, JSON.stringify(queuedUpdate));
+        } catch (e) {
+          console.error("Failed to save to localStorage", e);
+        }
+        queuedUpdate = null;
       }
-    }, 400);
+    }, 500); // Can be 300ms–1000ms
   },
 }));
 
-export default useStore;
+
+export default useStore
