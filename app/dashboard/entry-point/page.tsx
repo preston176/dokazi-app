@@ -1,8 +1,10 @@
-import { redirect } from "next/navigation";
+//@ts-ignore: React declarations for tsx
+import ClientRedirect from "./ClientRedirect";
 import { createOrGetUser } from "@/app/actions/createOrGetUser";
 
 export default async function DashboardEntryPoint() {
-    await createOrGetUser(); // ensures user is in DB
+    await createOrGetUser(); // Ensure user is in DB
 
-    redirect("/dashboard/"); // or wherever your real dashboard is
+    // Render client-side redirect component to clear drafts and navigate
+    return <ClientRedirect />;
 }

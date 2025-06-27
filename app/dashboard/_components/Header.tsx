@@ -1,8 +1,8 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
-import { useClerk } from "@clerk/clerk-react";
-import { FileText, LogOut } from "lucide-react";
+import { useClerk, UserButton } from "@clerk/clerk-react";
+import { DoorOpen, FileText, LogOut } from "lucide-react";
 import { ModeToggle } from "@/components/dark-mode-toggle";
 import { Button } from "@/components/ui/button";
 
@@ -38,6 +38,9 @@ function Header({ onMenuClick }: { onMenuClick?: () => void }) {
           {user?.firstName || user?.lastName || user?.emailAddresses[0]?.emailAddress}
         </span>
 
+        <UserButton userProfileMode="modal" />
+
+
         {isLoaded && (
           <div className="hidden md:flex">
             <Button
@@ -47,7 +50,7 @@ function Header({ onMenuClick }: { onMenuClick?: () => void }) {
               className="gap-1 lg:gap-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
             >
               <LogOut className="w-3 h-3 lg:w-4 lg:h-4" />
-              <span className="hidden sm:inline">Logout</span>
+              <span className="hidden sm:inline">Sign Out</span>
             </Button>
           </div>
         )}
