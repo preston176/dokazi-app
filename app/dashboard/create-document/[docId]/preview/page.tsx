@@ -10,24 +10,28 @@ import jsPDF from "jspdf";
 import { saveDocument } from "@/app/actions/saveDocument";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
+import { deleteLocalDraft } from "@/lib/deleteLocalDraft";
+import { deductUserCredit } from "@/app/actions/deductUserCredit";
+import { useUser } from "@clerk/nextjs";
 
 
 // Header
 function PreviewHeader({
-    onBack,
+
     onReset,
     onDownload,
 }: {
-    onBack?: () => void;
+
     onReset: () => void;
     onDownload: () => void;
 }) {
+    const { user, isLoaded } = useUser();
 
-
+    const router = useRouter();
     const handleSaveDocument = async () => {
         toast.loading("Saving Document")
 
-        const router = useRouter();
+
 
         const state = useStore.getState();
 
@@ -47,6 +51,7 @@ function PreviewHeader({
         if (result && result.success && result.data) {
             const newDocId = result.data.docId;
 
+            deleteLocalDraft(docId)
             // ✅ Clear state
             useStore.setState({
                 document: {
@@ -66,9 +71,11 @@ function PreviewHeader({
                 docId: null,
             });
 
+
             // Optional toast / redirect logic here
             // console.log("Saved with ID:", newDocId);
             toast.success("Document saved!");
+            deductUserCredit(user?.id!);
 
             // clear state
             router.replace(`/document/view/${newDocId}`);
@@ -79,11 +86,17 @@ function PreviewHeader({
         }
     };
 
+
+    // handle back
+
+    const handleBack = () => {
+        router.back()
+    }
     return (
         <div className="fixed top-0 w-full md:sticky md:top-20 z-30 bg-white dark:bg-gray-900 border-b p-4 lg:p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-y-0">
             {/* Left section */}
             <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
-                <Button variant="ghost" size="sm" onClick={onBack} className="gap-2">
+                <Button variant="ghost" size="sm" onClick={handleBack} className="gap-2">
                     <ArrowLeft className="w-4 h-4" />
                     Back
                 </Button>
@@ -107,10 +120,12 @@ function PreviewHeader({
                     <BrainCog className="w-4 h-4" />
                     Improve with AI
                 </Button>
-                <Button variant="default" className="gap-2 bg-emerald-700 hover:bg-gray-800 text-white" onClick={handleSaveDocument}>
-                    <Save className="w-4 h-4" />
-                    Save Document
-                </Button>
+                {
+                    isLoaded && <Button variant="default" className="gap-2 bg-emerald-700 hover:bg-gray-800 text-white" onClick={handleSaveDocument}>
+                        <Save className="w-4 h-4" />
+                        Save Document
+                    </Button>
+                }
             </div>
         </div>
 
@@ -332,12 +347,14 @@ function DocumentContent({
     onReset: () => void;
     refForPdf: React.RefObject<HTMLDivElement>;
 }) {
-    const { document, updateDocument } = useStore((s) => ({
-        document: s.document,
-        updateDocument: s.updateDocument,
-    }));
+    const document = useStore((s) => s.document);
+    const updateDocument = useStore((s) => s.updateDocument);
 
     const defaultContent = generateDocumentContent(data);
+
+    const value = document.CustomContent?.trim() === ""
+        ? defaultContent
+        : document.CustomContent;
 
     useEffect(() => {
         if (!document.CustomContent || document.CustomContent.trim() === "") {
@@ -360,7 +377,7 @@ function DocumentContent({
                     className="bg-white border shadow-sm rounded-lg p-4 md:p-6 max-w-full md:max-w-[794px] mx-auto font-sans text-gray-900"
                 >
                     <textarea
-                        value={document.CustomContent ?? ""}
+                        value={value}
                         onChange={handleChange}
                         className="w-full md:h-[1100px] min-h-[400px] resize-none bg-transparent outline-none text-sm sm:text-base leading-relaxed whitespace-pre-wrap text-wrap font-sans"
                         style={{ fontFamily: "inherit", lineHeight: "1.75" }}
