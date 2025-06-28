@@ -18,8 +18,8 @@ export const usersTable = pgTable("users", {
 
 export const documentsTable = pgTable("documents", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  docId: varchar("docId").notNull(),
-  clerkId: varchar("clerk_id").notNull().unique(),
+  docId: varchar("docId").notNull().unique(),
+  clerkId: varchar("clerk_id").notNull(),
   docTitle: varchar("document_title"),
   doctype: varchar("document_type", { length: 50 }),
   type: varchar("type", { length: 50 }),
