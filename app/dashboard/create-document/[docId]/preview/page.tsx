@@ -13,11 +13,11 @@ import { toast } from "sonner";
 import { deleteLocalDraft } from "@/lib/deleteLocalDraft";
 import { deductUserCredit } from "@/app/actions/deductUserCredit";
 import { useUser } from "@clerk/nextjs";
+import { useUserStore } from "@/store/UserStore";
 
 
 // Header
 function PreviewHeader({
-
     onReset,
     onDownload,
 }: {
@@ -29,8 +29,17 @@ function PreviewHeader({
 
     const router = useRouter();
     const handleSaveDocument = async () => {
-        toast.loading("Saving Document")
+        // check available user credits
+        const availableUserCredits = useUserStore.getState().user?.creditsAvailable
 
+        if (availableUserCredits == 0 || availableUserCredits! < 0) {
+            // Trigger payment modal
+            alert("Top up your credits to continue")
+            toast.error("Insufficient credits... Please Recharge")
+            return;
+        }
+
+        toast.loading("Saving Document")
 
 
         const state = useStore.getState();
