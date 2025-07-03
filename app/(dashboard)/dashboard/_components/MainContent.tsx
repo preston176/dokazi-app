@@ -20,6 +20,7 @@ type Document = {
   pricingAmount: number | null;
   duration: string | null;
   createdAt: string;
+  isDraft?:boolean;
 };
 
 function getLocalDrafts(): Document[] {
@@ -32,6 +33,10 @@ function getLocalDrafts(): Document[] {
         if (!raw) return null;
 
         const parsed = JSON.parse(raw);
+
+        // Skip drafts of documents being edited
+        if (parsed.isEdit === true) return null;
+
         return {
           docId: key.replace("doc-", ""),
           docTitle: parsed.DocTitle || "Untitled",
