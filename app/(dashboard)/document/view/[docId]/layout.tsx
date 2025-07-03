@@ -1,5 +1,5 @@
 "use client"
-import Header from '@/app/dashboard/_components/Header'
+import Header from '@/app/(dashboard)/dashboard/_components/Header'
 import { SignedIn } from '@clerk/nextjs'
 import React, { useState } from 'react'
 
