@@ -1,5 +1,4 @@
 import { ChangeEvent, useEffect, useState } from "react";
-import useStore from "@/store/DocumentStore";
 
 type Document = {
   DocTitle: string;
@@ -16,32 +15,44 @@ type Document = {
   CustomContent?: string;
 };
 
-export function useDocumentField<K extends keyof Document>(key: K) {
+type StoreShape = {
+  document: Document;
+  updateDocument: (partial: Partial<Document>) => void;
+};
+
+/**
+ * Reusable document field hook for any Zustand store (draft or edit mode)
+ */
+export function useDocumentField<K extends keyof Document>(
+  key: K,
+  useStore: (selector: (state: StoreShape) => any) => any
+) {
   const storeValue = useStore((state) => state.document[key]);
   const updateDocument = useStore((state) => state.updateDocument);
 
   const [localValue, setLocalValue] = useState(storeValue);
 
-  // Sync local with global if external change happens
+  // Keep local state in sync when external document updates (e.g., loadDocument)
   useEffect(() => {
     setLocalValue(storeValue);
   }, [storeValue]);
 
-  //  Debounce global update
+  // Debounced sync from local state to store
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (localValue !== storeValue) {
         updateDocument({ [key]: localValue } as Partial<Document>);
       }
-    }, 300); // ⏱️ adjust as needed
+    }, 300); // ⏱️ Debounce timing
 
     return () => clearTimeout(timeout);
   }, [localValue]);
 
+  // Handle input change (string or number)
   function onChange(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const raw = e.target.value;
     const parsed = typeof storeValue === "number" ? Number(raw) : raw;
-    setLocalValue(parsed as typeof storeValue); // instant UI
+    setLocalValue(parsed as typeof storeValue);
   }
 
   return { value: localValue, onChange };

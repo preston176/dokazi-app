@@ -87,6 +87,7 @@ const useStore = create<StoreState>((set, get) => ({
         queuedUpdate = null;
       }
     }, 500); // Can be 300ms–1000ms
+    return updatedDoc;
   },
 }));
 
