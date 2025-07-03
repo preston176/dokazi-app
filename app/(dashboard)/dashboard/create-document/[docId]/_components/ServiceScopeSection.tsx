@@ -11,9 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
 import { useDocumentField } from "@/lib/useDocumentField"; // adjust if needed
+import { useEditDocStore } from "@/store/EditDocumentStore";
+import useStore from "@/store/DocumentStore";
 
-function ServiceScopeSection() {
-  const scopeField = useDocumentField("ServiceScope");
+function ServiceScopeSection({ isEdit }: { isEdit?: boolean; }) {
+  const scopeField = useDocumentField("ServiceScope", isEdit ? useEditDocStore : useStore);
 
   const services = scopeField.value;
 
@@ -29,7 +31,7 @@ function ServiceScopeSection() {
 
   const removeService = (index: number) => {
     if (services.length > 1) {
-      const filtered = services.filter((_, i) => i !== index);
+      const filtered: string[] = services.filter((_: string, i: number) => i !== index);
       scopeField.onChange({ target: { value: filtered } } as any);
     }
   };
