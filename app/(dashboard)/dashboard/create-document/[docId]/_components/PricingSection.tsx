@@ -16,11 +16,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useDocumentField } from "@/lib/useDocumentField";
+import useStore from "@/store/DocumentStore";
+import { useEditDocStore } from "@/store/EditDocumentStore";
 
-function PricingSection() {
-  const amountField = useDocumentField("PricingAmount");
-  const currencyField = useDocumentField("Currency");
-  const typeField = useDocumentField("Type");
+function PricingSection({isEdit}: {isEdit?: boolean}) {
+  const amountField = useDocumentField("PricingAmount", isEdit? useEditDocStore: useStore);
+  const currencyField = useDocumentField("Currency", isEdit? useEditDocStore: useStore);
+  const typeField = useDocumentField("Type", isEdit? useEditDocStore: useStore);
 
   return (
     <Card>
