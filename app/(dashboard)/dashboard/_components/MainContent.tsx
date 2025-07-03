@@ -40,11 +40,12 @@ function getLocalDrafts(): Document[] {
         return {
           docId: key.replace("doc-", ""),
           docTitle: parsed.DocTitle || "Untitled",
-          doctype: "draft",
+          doctype: parsed.doctype|| "",
           clientName: parsed.ClientName || "—",
           pricingAmount: parsed.PricingAmount || 0,
           duration: parsed.Duration || "—",
           createdAt: new Date().toISOString(),
+
         };
       } catch {
         return null;
