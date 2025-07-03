@@ -5,6 +5,7 @@ import { useClerk, UserButton } from "@clerk/clerk-react";
 import { DoorOpen, FileText, LogOut } from "lucide-react";
 import { ModeToggle } from "@/components/dark-mode-toggle";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const { user, isLoaded } = useUser();
@@ -24,12 +25,12 @@ function Header({ onMenuClick }: { onMenuClick?: () => void }) {
 
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between p-4 lg:p-6 bg-white dark:bg-black border-b dark:border-gray-800">
-      <div className="flex items-center gap-2">
+      <Link className="flex items-center gap-2" href={"/dashboard"}>
         <FileText className="w-5 h-5 lg:w-6 lg:h-6 text-emerald-600 dark:text-blue-400" />
         <h1 className="text-lg lg:text-xl font-semibold text-gray-900 dark:text-white">
           DoKazi.app
         </h1>
-      </div>
+      </Link>
 
       <div className="flex items-center gap-2 lg:gap-4">
         <ModeToggle />
