@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useDocumentField } from "@/lib/useDocumentField"; // adjust path if needed
 
 function CustomContentSection() {
-  const contentField = useDocumentField("CustomContent");
+  // const contentField = useDocumentField("CustomContent");
 
   return (
     <Card>
@@ -26,8 +26,8 @@ function CustomContentSection() {
             placeholder="Leave blank to auto-generate content based on document type."
             className="min-h-32 resize-none"
             rows={6}
-            value={contentField.value}
-            onChange={contentField.onChange}
+            // value={contentField.value}
+            // onChange={contentField.onChange}
           />
           <p className="text-sm text-gray-500">
             AI-based content will be automatically generated based on your document type and details.
