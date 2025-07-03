@@ -1,9 +1,11 @@
+import { sql } from "drizzle-orm";
 import {
   date,
   integer,
   pgTable,
   varchar,
   timestamp,
+  jsonb,
 } from "drizzle-orm/pg-core";
 
 export const usersTable = pgTable("users", {
@@ -27,7 +29,7 @@ export const documentsTable = pgTable("documents", {
   clientEmail: varchar("client_email"),
   currency: varchar("currency", { length: 10 }),
   pricingAmount: integer("pricing_amount"),
-  serviceScope: varchar("service_scope").default("").notNull(),
+  serviceScope: jsonb("service_scope").default(sql`'[]'::jsonb`),
   customContent: varchar("custom_content"),
   duration: varchar("duration", { length: 255 }),
   startDate: varchar("start_date", { length: 50 }),
