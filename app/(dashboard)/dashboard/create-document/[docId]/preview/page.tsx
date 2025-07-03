@@ -1,149 +1,20 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Save, RotateCcw, BrainCog, Download } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { useParams } from "next/navigation";
 import useStore from "@/store/DocumentStore";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import jsPDF from "jspdf";
-import { saveDocument } from "@/app/actions/saveDocument";
-import { v4 as uuidv4 } from "uuid";
-import { toast } from "sonner";
-import { deleteLocalDraft } from "@/lib/deleteLocalDraft";
-import { deductUserCredit } from "@/app/actions/deductUserCredit";
-import { useUser } from "@clerk/nextjs";
-import { useUserStore } from "@/store/UserStore";
 
+import PreviewHeader from "./_components/PreviewHeader";
+import DocumentContent from "./_components/DocumentContent";
+import { useEditDocStore } from "@/store/EditDocumentStore";
+import cluster from "cluster";
 
-// Header
-function PreviewHeader({
-    onReset,
-    onDownload,
-}: {
-
-    onReset: () => void;
-    onDownload: () => void;
-}) {
-    const { user, isLoaded } = useUser();
-
-    const router = useRouter();
-    const handleSaveDocument = async () => {
-        // check available user credits
-        const availableUserCredits = useUserStore.getState().user?.creditsAvailable
-
-        if (availableUserCredits == 0 || availableUserCredits! < 0) {
-            // Trigger payment modal
-            alert("Top up your credits to continue")
-            toast.error("Insufficient credits... Please Recharge")
-            return;
-        }
-
-        toast.loading("Saving Document")
-
-
-        const state = useStore.getState();
-
-        let docId = state.docId;
-
-        //  Generate UUID if not already present
-        if (!docId) {
-            docId = uuidv4();
-            useStore.getState().setDocId(docId);
-        }
-
-        const result = await saveDocument({
-            ...state.document,
-            docId,
-        });
-
-        if (result && result.success && result.data) {
-            const newDocId = result.data.docId;
-
-            deleteLocalDraft(docId)
-            // ✅ Clear state
-            useStore.setState({
-                document: {
-                    DocTitle: "",
-                    doctype: "",
-                    ClientName: "",
-                    ClientEmail: "",
-                    ServiceScope: [""],
-                    PricingAmount: 0,
-                    Currency: "",
-                    Type: "",
-                    StartDate: "",
-                    EndDate: "",
-                    Duration: "",
-                    CustomContent: "",
-                },
-                docId: null,
-            });
-
-
-            // Optional toast / redirect logic here
-            // console.log("Saved with ID:", newDocId);
-            toast.success("Document saved!");
-            deductUserCredit(user?.id!);
-
-            // clear state
-            router.replace(`/document/view/${newDocId}`);
-
-        } else {
-            // console.warn("Save failed or user not logged in:", result);
-            toast.error("Error while saving document. " + result)
-        }
-    };
-
-
-    // handle back
-
-    const handleBack = () => {
-        router.back()
-    }
-    return (
-        <div className="fixed top-0 w-full md:sticky md:top-20 z-30 bg-white dark:bg-gray-900 border-b p-4 lg:p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-y-0">
-            {/* Left section */}
-            <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
-                <Button variant="ghost" size="sm" onClick={handleBack} className="gap-2">
-                    <ArrowLeft className="w-4 h-4" />
-                    Back
-                </Button>
-                <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 dark:text-white">
-                    Document Preview
-                </h1>
-            </div>
-
-            {/* Right section */}
-            <div className="flex flex-row mt-4 md:mt-0  gap-2 md:gap-4">
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onReset}
-                    className="gap-2 text-red-600 dark:text-rose-400 hover:bg-red-50"
-                >
-                    <RotateCcw className="w-4 h-4" />
-                    Reset
-                </Button>
-                <Button variant="secondary" size="sm" className="gap-2">
-                    <BrainCog className="w-4 h-4" />
-                    Improve with AI
-                </Button>
-                {
-                    isLoaded && <Button variant="default" className="gap-2 bg-emerald-700 hover:bg-gray-800 text-white" onClick={handleSaveDocument}>
-                        <Save className="w-4 h-4" />
-                        Save Document
-                    </Button>
-                }
-            </div>
-        </div>
-
-    );
-}
 
 
 // Mapping
-function mapDocumentToPreviewData(document: ReturnType<typeof useStore.getState>["document"]) {
+export function mapDocumentToPreviewData(document: ReturnType<typeof useStore.getState>["document"]) {
     return {
         title: document.DocTitle,
         type: document.doctype,
@@ -156,7 +27,8 @@ function mapDocumentToPreviewData(document: ReturnType<typeof useStore.getState>
 }
 
 // Template Generator
-function generateDocumentContent(data: ReturnType<typeof mapDocumentToPreviewData>) {
+export function generateDocumentContent(data: ReturnType<typeof mapDocumentToPreviewData>) {
+
     const { type, client, clientEmail, services, investment, timeline, title } = data;
 
     switch (type) {
@@ -304,7 +176,7 @@ Best,
 }
 
 // Details Card
-function DocumentDetails({ data }: { data: ReturnType<typeof mapDocumentToPreviewData> }) {
+export function DocumentDetails({ data }: { data: ReturnType<typeof mapDocumentToPreviewData> }) {
     return (
         <Card>
             <CardHeader>
@@ -346,65 +218,26 @@ function DocumentDetails({ data }: { data: ReturnType<typeof mapDocumentToPrevie
     );
 }
 
-// Editable Text Area
-function DocumentContent({
-    data,
-    onReset,
-    refForPdf,
-}: {
-    data: ReturnType<typeof mapDocumentToPreviewData>;
-    onReset: () => void;
-    refForPdf: React.RefObject<HTMLDivElement>;
-}) {
-    const document = useStore((s) => s.document);
-    const updateDocument = useStore((s) => s.updateDocument);
-
-    const defaultContent = generateDocumentContent(data);
-
-    const value = document.CustomContent?.trim() === ""
-        ? defaultContent
-        : document.CustomContent;
-
-    useEffect(() => {
-        if (!document.CustomContent || document.CustomContent.trim() === "") {
-            updateDocument({ CustomContent: defaultContent });
-        }
-    }, [document.CustomContent, defaultContent, updateDocument]);
-
-    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        updateDocument({ CustomContent: e.target.value });
-    };
-
-    return (
-        <Card className="h-fit">
-            <CardHeader>
-                <CardTitle className="text-lg">Document Content</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div
-                    ref={refForPdf}
-                    className="bg-white border shadow-sm rounded-lg p-4 md:p-6 max-w-full md:max-w-[794px] mx-auto font-sans text-gray-900"
-                >
-                    <textarea
-                        value={value}
-                        onChange={handleChange}
-                        className="w-full md:h-[1100px] min-h-[400px] resize-none bg-transparent outline-none text-sm sm:text-base leading-relaxed whitespace-pre-wrap text-wrap font-sans"
-                        style={{ fontFamily: "inherit", lineHeight: "1.75" }}
-                    />
-                </div>
-            </CardContent>
-        </Card>
-    );
-}
-
-
-
 // Main
-export default function DocumentPreview() {
+export default function DocumentPreview({ isEdit }: { isEdit?: boolean }) {
     const { docId } = useParams();
-    const loadDocument = useStore((s) => s.loadDocument);
-    const updateDocument = useStore((s) => s.updateDocument);
-    const document = useStore((s) => s.document);
+    // if edit mode, load edit states that had been updated from db
+    let loadDocument;
+    let updateDocument;
+    let document;
+
+    if (isEdit) {
+        loadDocument = useEditDocStore((s) => s.loadDocument);
+        updateDocument = useEditDocStore((s) => s.updateDocument);
+        document = useEditDocStore((s) => s.document);
+    } else {
+        loadDocument = useStore((s) => s.loadDocument);
+        updateDocument = useStore((s) => s.updateDocument);
+        document = useStore((s) => s.document);
+    }
+
+
+
 
     const pdfRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>;
 
@@ -414,16 +247,20 @@ export default function DocumentPreview() {
         }
     }, [docId, loadDocument]);
 
-    const data = mapDocumentToPreviewData(document);
+    const data = mapDocumentToPreviewData(document!);
+
 
     const handleReset = () => {
         const defaultContent = generateDocumentContent(data);
-        updateDocument({ CustomContent: defaultContent });
+
+         updateDocument({ CustomContent: defaultContent });
+         
     };
 
+    // function to handle PDF Download
     const handleDownloadPDF = () => {
         const doc = new jsPDF("p", "pt", "a4");
-        const content = document.CustomContent || generateDocumentContent(data);
+        const content = document?.CustomContent || generateDocumentContent(data);
         const lines = doc.splitTextToSize(content, 500);
         doc.setFont("Helvetica");
         doc.setFontSize(12);
@@ -433,13 +270,13 @@ export default function DocumentPreview() {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-950 ">
-            <PreviewHeader onReset={handleReset} onDownload={handleDownloadPDF} />
+            <PreviewHeader onReset={handleReset} onDownload={handleDownloadPDF} isEdit={isEdit} />
             <div className="flex flex-col lg:flex-row gap-6 p-4 lg:p-6">
                 <div className="w-full lg:w-80">
                     <DocumentDetails data={data} />
                 </div>
                 <div className="flex-1 overflow-x-auto">
-                    <DocumentContent data={data} onReset={handleReset} refForPdf={pdfRef} />
+                    <DocumentContent data={data} onReset={handleReset} refForPdf={pdfRef} isEdit={isEdit} />
                 </div>
             </div>
         </div>
