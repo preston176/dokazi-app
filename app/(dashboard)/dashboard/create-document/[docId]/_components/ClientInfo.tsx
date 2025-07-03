@@ -4,10 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useDocumentField } from "@/lib/useDocumentField";
+import useStore from "@/store/DocumentStore";
+import { useEditDocStore } from "@/store/EditDocumentStore";
 
-function ClientInfo() {
-  const nameField = useDocumentField("ClientName");
-  const emailField = useDocumentField("ClientEmail");
+function ClientInfo({isEdit}: {isEdit?: boolean}) {
+  const nameField = useDocumentField("ClientName", isEdit? useEditDocStore: useStore);
+  const emailField = useDocumentField("ClientEmail", isEdit? useEditDocStore: useStore);
 
 
   return (
