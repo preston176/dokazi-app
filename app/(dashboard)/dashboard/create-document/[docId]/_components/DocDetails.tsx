@@ -16,10 +16,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useDocumentField } from "@/lib/useDocumentField";
+import useStore from "@/store/DocumentStore";
+import { useEditDocStore } from "@/store/EditDocumentStore";
 
-function DocDetails() {
-  const docTitleField = useDocumentField("DocTitle");
-  const doctypeField = useDocumentField("doctype");
+function DocDetails({ isEdit }: { isEdit?: boolean }) {
+  const docTitleField = useDocumentField("DocTitle", isEdit ? useEditDocStore : useStore);
+  const doctypeField = useDocumentField("doctype", isEdit ? useEditDocStore : useStore);
 
   return (
     <Card>
