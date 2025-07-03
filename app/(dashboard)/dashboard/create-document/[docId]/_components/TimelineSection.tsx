@@ -9,11 +9,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useDocumentField } from "@/lib/useDocumentField";
-function TimelineSection() {
+import useStore from "@/store/DocumentStore";
+import { useEditDocStore } from "@/store/EditDocumentStore";
+function TimelineSection({isEdit}: {isEdit?: boolean}) {
     
-  const startDateField = useDocumentField("StartDate");
-  const endDateField = useDocumentField("EndDate");
-  const durationField = useDocumentField("Duration");
+  const startDateField = useDocumentField("StartDate", isEdit? useEditDocStore: useStore);
+  const endDateField = useDocumentField("EndDate", isEdit? useEditDocStore: useStore);
+  const durationField = useDocumentField("Duration", isEdit? useEditDocStore: useStore);
 
   return (
     <Card>
