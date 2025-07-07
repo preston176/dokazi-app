@@ -36,9 +36,9 @@ export default function DocumentContent({
   // When component mounts, populate default content if missing
   useEffect(() => {
     const needsDefault =
-      !document?.CustomContent ||
-      document.CustomContent.trim() === "" ||
-      document.CustomContent.trim() === "Preview not available for this document type.";
+
+      document.CustomContent!.trim() === "" ||
+      document.CustomContent!.trim() === "Preview not available for this document type.";
 
     if (needsDefault) {
       updateDocument({ CustomContent: defaultContent });
