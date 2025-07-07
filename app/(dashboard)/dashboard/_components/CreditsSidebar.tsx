@@ -14,7 +14,7 @@ function CreditsSidebar({ className = "" }: { className?: string }) {
     fetchUser();
   }, [fetchUser]);
 
-  const creditsLeft = user ? user.creditsAvailable - user.creditsUsed : 0;
+  const creditsLeft = user ? user?.creditsAvailable  : 0;
 
   return (
     <div className={`w-full h-fit lg:w-80 p-4 lg:p-6 bg-gray-50 dark:bg-gray-900 ${className}`}>
@@ -66,7 +66,7 @@ function CreditsSidebar({ className = "" }: { className?: string }) {
                   Free Plan Limits
                 </h4>
                 <p className="text-xs lg:text-sm text-orange-700 dark:text-orange-400">
-                  You get 3 free documents per month. Credits reset on the 1st of each month.
+                  You get <strong>3</strong> free documents per month. Credits reset on the 1st of each month.
                 </p>
               </div>
             </div>
