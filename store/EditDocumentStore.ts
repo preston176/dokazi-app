@@ -56,7 +56,7 @@ function transformFromDB(dbDoc: any): Document {
     Type: dbDoc.type ?? "",
     ClientName: dbDoc.clientName ?? "",
     ClientEmail: dbDoc.clientEmail ?? "",
-    ServiceScope: dbDoc.serviceScope?.split(",") ?? [],
+    ServiceScope: dbDoc.serviceScope ?? [],
     PricingAmount: dbDoc.pricingAmount ?? 0,
     Currency: dbDoc.currency ?? "",
     StartDate: dbDoc.startDate ?? "",
