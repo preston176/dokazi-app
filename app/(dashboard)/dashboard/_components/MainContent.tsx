@@ -6,11 +6,11 @@ import { deleteDocument } from "@/app/actions/deleteDocument";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CreditCard, EyeIcon, FileText, Plus, TrashIcon } from "lucide-react";
+import { CreditCard, EyeIcon, FileText, PencilIcon, Plus, TrashIcon } from "lucide-react";
 import { format } from "date-fns";
 import Link from "next/link";
 import { DocumentCardSkeleton } from "./DocumentCardSkeleton";
-import { toast } from "sonner"; 
+import { toast } from "sonner";
 
 type Document = {
   docId: string;
@@ -20,7 +20,7 @@ type Document = {
   pricingAmount: number | null;
   duration: string | null;
   createdAt: string;
-  isDraft?:boolean;
+  isDraft?: boolean;
 };
 
 function getLocalDrafts(): Document[] {
@@ -40,7 +40,7 @@ function getLocalDrafts(): Document[] {
         return {
           docId: key.replace("doc-", ""),
           docTitle: parsed.DocTitle || "Untitled",
-          doctype: parsed.doctype|| "",
+          doctype: parsed.doctype || "",
           clientName: parsed.ClientName || "—",
           pricingAmount: parsed.PricingAmount || 0,
           duration: parsed.Duration || "—",
@@ -104,9 +104,22 @@ function DocumentCard({
         >
           <Button variant="default" className="w-full bg-emerald-700 dark:text-white">
             <EyeIcon className="w-4 h-4 mr-2" />
-            {isDraft ? "Resume" : "View"}
+            {isDraft ? "Continue" : "View"}
           </Button>
         </Link>
+        {
+          !isDraft && (<Link
+            href={
+              `/document/edit/${doc.docId}`
+            }
+            className="flex-1"
+          >
+            <Button variant="secondary" className="w-full dark:text-white">
+              <PencilIcon className="w-4 h-4 mr-2" />
+              Edit 
+            </Button>
+          </Link>)
+        }
         <Button
           variant="ghost"
           className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900"
@@ -145,8 +158,8 @@ export default function MainContent() {
               typeof d.createdAt === "string"
                 ? d.createdAt
                 : d.createdAt
-                ? new Date(d.createdAt).toISOString()
-                : new Date().toISOString(),
+                  ? new Date(d.createdAt).toISOString()
+                  : new Date().toISOString(),
           }))
         );
       }
