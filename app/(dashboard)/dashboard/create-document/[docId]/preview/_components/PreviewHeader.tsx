@@ -85,6 +85,7 @@ export default function PreviewHeader({
                 toast.success("Document saved Successfully!");
                 deductUserCredit(user?.id!);
                 router.replace(`/document/view/${newDocId}`);
+                toast.dismiss();
                 return;
             }
         }
