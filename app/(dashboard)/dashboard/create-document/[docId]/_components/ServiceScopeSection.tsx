@@ -31,7 +31,7 @@ function ServiceScopeSection({ isEdit }: { isEdit?: boolean; }) {
 
   const removeService = (index: number) => {
     if (services.length > 1) {
-      const filtered: string[] = services.filter((_: string, i: number) => i !== index);
+      const filtered: string[] = services.filter((_, i: number) => i !== index);
       scopeField.onChange({ target: { value: filtered } } as any);
     }
   };
