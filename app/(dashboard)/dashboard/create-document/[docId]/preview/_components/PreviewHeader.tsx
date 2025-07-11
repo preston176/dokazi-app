@@ -3,6 +3,8 @@ import { saveDocument } from "@/app/actions/saveDocument";
 import { updateDocumentInDB } from "@/app/actions/updateDocument";
 import { Button } from "@/components/ui/button";
 import { deleteLocalDraft } from "@/lib/deleteLocalDraft";
+import { genAIModel } from "@/lib/genAIModel";
+import { useDocumentField } from "@/lib/useDocumentField";
 import useStore from "@/store/DocumentStore";
 import { useEditDocStore } from "@/store/EditDocumentStore";
 import { useUserStore } from "@/store/UserStore";
@@ -24,6 +26,9 @@ export default function PreviewHeader({
 }) {
     const { user, isLoaded } = useUser();
     const router = useRouter();
+
+    const useCorrectStore = isEdit ? useEditDocStore : useStore;
+    const { value, onChange } = useDocumentField("CustomContent", useCorrectStore);
 
     const handleSaveDocument = async () => {
         const availableUserCredits = useUserStore.getState().user?.creditsAvailable;
@@ -94,6 +99,29 @@ export default function PreviewHeader({
     const handleBack = () => {
         router.back();
     };
+    const handleImproveWithAI = async () => {
+        toast.loading("Improving with AI...");
+
+        try {
+            const res = await genAIModel(value);
+
+            if (res && typeof res === "string") {
+                const fakeEvent = {
+                    target: { value: res.trim() },
+                } as unknown as React.ChangeEvent<HTMLInputElement>;
+
+                onChange(fakeEvent);
+                toast.success("Improved using AI!");
+            } else {
+                toast.error("AI improvement failed.");
+            }
+        } catch (err) {
+            toast.error("Something went wrong with AI.");
+        } finally {
+            toast.dismiss();
+        }
+    };
+
 
     return (
         <div className="fixed top-0 w-full md:sticky md:top-20 z-30 bg-white dark:bg-gray-900 border-b p-4 lg:p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-y-0">
@@ -117,7 +145,7 @@ export default function PreviewHeader({
                     <RotateCcw className="w-4 h-4" />
                     Reset
                 </Button>
-                <Button variant="secondary" size="sm" className="gap-2">
+                <Button variant="secondary" size="sm" className="gap-2" onClick={handleImproveWithAI}>
                     <BrainCog className="w-4 h-4" />
                     Improve with AI
                 </Button>
