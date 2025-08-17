@@ -7,22 +7,22 @@
 
 ## 🚀 Project Overview
 
-Dokazi is an enterprise-grade document management system built with modern web technologies. It streamlines the creation, editing, and management of complex business documents while maintaining version control and real-time collaboration capabilities.
+Dokazi is a smart document creation platform built specifically for freelancers. It empowers independent professionals to craft professional client-facing documents with ease, leveraging AI to improve content quality. With one click, freelancers can generate shareable public links to their documents, streamlining client communication and proposal delivery.
 
-### 🌟 Key Features
+### Key Features
 
-- **Dynamic Document Creation**: Intuitive interface for creating and managing various document types
-- **Smart Client Management**: Built-in client information tracking and relationship management
-- **Service Scope Definition**: Structured approach to defining and managing service deliverables
-- **Timeline Integration**: Visual project timeline management with milestone tracking
-- **Dark Mode Support**: Thoughtfully designed dark mode for enhanced usability
-- **Responsive Design**: Seamless experience across all device sizes
+- **AI-Powered Document Creation**: Smart suggestions and improvements for your professional documents
+- **One-Click Sharing**: Instantly generate public links for client-ready documents
+- **Professional Templates**: Pre-built templates for proposals, contracts, and scope documents
+- **Service Scope Builder**: Interactive tools to define and present your service offerings
+- **Timeline & Milestone Planning**: Comprehensive breakdown of project timelines and milestones for clear client communication
+- **Dark Mode Support**: Eye-friendly interface for long document editing sessions
 
 ## 🏗 Technical Architecture
 
 ### Frontend Stack
 
-- **Next.js 14**: Leveraging server components and app router for optimal performance
+- **Next.js 15**: Leveraging server components and app router for optimal performance
 - **TypeScript**: 100% type coverage for robust code quality
 - **Tailwind CSS**: Utility-first CSS framework for responsive design
 - **Zustand**: Lightweight state management with hooks
@@ -97,11 +97,12 @@ dokazi/
 
 ## 📈 Future Roadmap
 
-- [ ] AI-powered document suggestions
-- [ ] Real-time collaboration features
-- [ ] Advanced document analytics
-- [ ] Integration with popular CRM systems
-- [ ] Mobile application development
+- [ ] Subscription management for premium features
+- [ ] Advanced AI writing assistant for professional tone and clarity
+- [ ] Automated pricing suggestions based on scope
+- [ ] Client feedback and revision tracking system
+- [ ] Signature integration for contracts
+- [ ] Analytics dashboard for proposal success rates
 
 ## 📜 License
 
@@ -109,18 +110,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🌟 Why This Project Stands Out
 
-1. **Enterprise-Ready Architecture**: Built with scalability and maintainability in mind
-2. **Modern Tech Stack**: Utilizing the latest features from Next.js 14 and React
-3. **Performance-First Approach**: Optimized for speed and user experience
-4. **Clean Code Principles**: Following SOLID principles and best practices
-5. **Comprehensive Documentation**: Detailed documentation for easy onboarding
+1. **Freelancer-First Design**: Built specifically for the needs of independent professionals
+2. **AI-Enhanced Writing**: Smart suggestions help craft more professional documents
+3. **Instant Sharing**: One-click public links generation for client access
+4. **Modern & Fast**: Built with Next.js 15 for optimal performance
 
 ## 🔗 Connect With Me
 
-- **Portfolio**: [Your Portfolio]
-- **LinkedIn**: [Your LinkedIn]
-- **Twitter**: [@YourTwitter]
+- **Portfolio**: [Preston Mayieka](https://preston176.vercel.app/)
+- **LinkedIn**: [Preston Mayieka](https://www.linkedin.com/in/preston-mayieka/)
 
 ---
 
-Built with ❤️ by Preston Yongo
+Built with ❤️ by Preston
