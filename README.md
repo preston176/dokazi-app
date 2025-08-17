@@ -92,8 +92,6 @@ sequenceDiagram
 - **Public Sharing**: Secure document sharing with public links
 - **Dark Mode**: System-aware theme switching
 
-### Document Creation Workflow
-
 ```mermaid
 graph LR
     subgraph Input
