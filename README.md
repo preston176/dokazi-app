@@ -1,13 +1,15 @@
-# 📄 Dokazi - Next-Generation Document Management System
+# 📄 Dokazi - AI-Powered Freelancer Proposal Crafter
 
-[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
 
 ## 🚀 Project Overview
 
-Dokazi is a smart document creation platform built specifically for freelancers. It empowers independent professionals to craft professional client-facing documents with ease, leveraging AI to improve content quality. With one click, freelancers can generate shareable public links to their documents, streamlining client communication and proposal delivery.
+- Dokazi is a smart document creation platform built specifically for freelancers.
+- It empowers independent professionals to craft professional client-facing documents with ease, leveraging AI to improve content quality.
+- With one click, freelancers can generate shareable public links to their documents, streamlining client communication and proposal delivery.
 
 ### Key Features
 
@@ -20,20 +22,109 @@ Dokazi is a smart document creation platform built specifically for freelancers.
 
 ## 🏗 Technical Architecture
 
+### System Architecture Diagram
+
+```mermaid
+graph TB
+    subgraph Client
+        UI[User Interface]
+        ZS[Zustand Stores]
+        SC[Server Components]
+    end
+
+    subgraph Server
+        AR[App Router]
+        SA[Server Actions]
+        AI[AI Service]
+    end
+
+    subgraph Database
+        PS[(PostgreSQL)]
+        DR[Drizzle ORM]
+    end
+
+    UI --> SC
+    UI --> ZS
+    SC --> AR
+    AR --> SA
+    SA --> DR
+    DR --> PS
+    SA --> AI
+```
+
+### User Flow
+
+```mermaid
+sequenceDiagram
+    actor F as Freelancer
+    participant UI as Frontend
+    participant SA as Server Actions
+    participant DB as Database
+    participant AI as AI Service
+
+    F->>UI: Create Document
+    UI->>SA: Save Draft
+    SA->>DB: Store Document
+    F->>UI: Edit Content
+    UI->>AI: Request Improvements
+    AI-->>UI: Suggestions
+    F->>UI: Finalize Document
+    UI->>SA: Generate Share Link
+    SA->>DB: Update Status
+    SA-->>UI: Public URL
+    UI-->>F: Share Link
+```
+
 ### Frontend Stack
 
-- **Next.js 15**: Leveraging server components and app router for optimal performance
-- **TypeScript**: 100% type coverage for robust code quality
-- **Tailwind CSS**: Utility-first CSS framework for responsive design
-- **Zustand**: Lightweight state management with hooks
-- **Shadcn/ui**: Modern component library with accessibility built-in
+- **Next.js 14**: App Router with Server Components for optimal performance
+- **TypeScript**: Full type safety across the entire codebase
+- **Tailwind CSS & Shadcn/ui**: Modern, responsive UI components
+- **Zustand**: Efficient state management with separate stores for documents and user data
+- **Drizzle ORM**: Type-safe database queries and schema management
+
+### Key Technical Features
+
+- **Authentication**: Secure user authentication and authorization
+- **Document Management**: Complete CRUD operations with real-time updates
+- **AI Integration**: Smart document enhancement using AI models
+- **Credits System**: Built-in credit management for premium features
+- **Public Sharing**: Secure document sharing with public links
+- **Dark Mode**: System-aware theme switching
+
+### Document Creation Workflow
+
+```mermaid
+graph LR
+    subgraph Input
+        A[Client Info] --> D[Document]
+        B[Service Scope] --> D
+        C[Timeline] --> D
+    end
+
+    subgraph Processing
+        D --> E[AI Enhancement]
+        E --> F[Preview]
+        F --> G{Approved?}
+        G -->|Yes| H[Generate Link]
+        G -->|No| D
+    end
+
+    subgraph Output
+        H --> I[Public URL]
+        I --> J[Client View]
+        J --> K[Feedback Loop]
+        K -->|Revisions| D
+    end
+```
 
 ### Performance Optimizations
 
-- Server-side rendering for improved SEO and initial page load
-- Dynamic imports for code splitting
-- Optimized asset delivery through next/image
-- Efficient state management with Zustand stores
+- **Server Components**: Reduced client-side JavaScript
+- **Dynamic Imports**: Optimized code splitting for faster loading
+- **Edge Functions**: Fast, globally distributed API routes
+- **Optimized Assets**: Next.js Image and Font optimization
+- **State Management**: Efficient Zustand stores with persistence
 
 ## 🛠 Getting Started
 
@@ -66,17 +157,62 @@ Dokazi is a smart document creation platform built specifically for freelancers.
 
 ## 📁 Project Structure
 
-```
+```typescript
 dokazi/
-├── app/                    # Next.js app directory
-│   ├── (landingpage)      # Landing page routes
-│   ├── dashboard/         # Protected dashboard routes
-│   ├── documents/         # Document management
-│   └── actions/           # Server actions
-├── components/            # Reusable UI components
-├── lib/                   # Utility functions
-├── store/                # Zustand state management
-└── public/               # Static assets
+├── app/                              # Next.js app directory
+│   ├── (landingpage)/               # Landing page routes
+│   │   └── page.tsx
+│   ├── actions/                     # Server actions
+│   │   ├── createOrGetUser.ts      # User management
+│   │   ├── deductUserCredit.ts     # Credits system
+│   │   ├── deleteDocument.ts       # Document operations
+│   │   ├── fetchDocument.ts
+│   │   ├── getAllUserDocuments.ts
+│   │   ├── getUserDetails.ts
+│   │   ├── saveDocument.ts
+│   │   └── updateDocument.ts
+│   ├── dashboard/                   # Main dashboard
+│   │   ├── create-document/        # Document creation
+│   │   │   ├── [docId]/           # Dynamic document routes
+│   │   │   │   ├── _components/   # Document editor components
+│   │   │   │   └── page.tsx
+│   │   │   └── preview/           # Document preview
+│   │   ├── entry-point/          # User entry flows
+│   │   └── _components/          # Dashboard components
+│   ├── document/                 # Document management
+│   │   ├── edit/                # Document editing
+│   │   └── view/                # Public document viewing
+│   └── sign-in/                 # Authentication
+├── components/                  # Shared components
+│   ├── ui/                     # UI component library
+│   │   ├── button.tsx
+│   │   ├── card.tsx
+│   │   ├── input.tsx
+│   │   ├── select.tsx
+│   │   └── textarea.tsx
+│   ├── dark-mode-toggle.tsx
+│   └── theme-provider.tsx
+├── lib/                        # Utility functions
+│   ├── deleteLocalDraft.ts
+│   ├── genAIModel.ts          # AI integration
+│   ├── useDocumentField.ts    # Custom hooks
+│   └── utils.ts
+├── store/                     # State management
+│   ├── DocumentStore.ts       # Document state
+│   ├── EditDocumentStore.ts   # Document editing state
+│   └── UserStore.ts          # User state
+├── src/                       # Core source
+│   └── db/                   # Database
+│       └── schema.ts        # Database schema
+└── public/                   # Static assets
+    ├── file.svg
+    └── globe.svg
+
+Configuration:
+├── next.config.ts           # Next.js config
+├── middleware.ts            # Auth & routing middleware
+├── drizzle.config.ts       # Database config
+└── components.json         # UI components config
 ```
 
 ## 🧪 Quality Assurance
